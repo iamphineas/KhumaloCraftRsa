@@ -1,0 +1,111 @@
+﻿@model IEnumerable<KhumaloCraftRsa.Models.Order>
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+@inject RoleManager<IdentityRole> RoleManager
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.UserId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Approved)
+            </th>
+            <th>
+                Order status
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Approved)
+            </td>
+                <td>
+                    @if (SignInManager.IsSignedIn(User) && User.IsInRole("Member"))
+                    {
+                        @if (item.Approved == true)
+                        {
+                            <span style="color: green;">Your order is approved. You may pay for the order.</span>
+                        }
+                        else
+                        {
+                            <span style="color: red;">Sorry, order declined. Cannot proceed with payment. Please contact us.</span>
+                        }
+                    }
+                    else
+                    {
+                        @if (item.Approved == true)
+                        {
+                            <span style="color: green;">Order approved.</span>
+                        }
+                        else
+                        {
+                            <span style="color: red;">Need Approval.</span>
+                        }
+                    }
+
+                </td>
+            <td>
+
+                    @if (SignInManager.IsSignedIn(User) && User.IsInRole("Member"))
+                    {
+                        <form asp-action="Details" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-info" name="id" value="@item.OrderId">Details</button>
+                        </form>
+                        <form asp-action="Payment" method="post" style="display:inline;">
+
+                            <a asp-controller="MyCarts" asp-action="Checkout" class="btn btn-success">Payment</a>
+                           
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-action="Details" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-secondary" name="id" value="@item.OrderId">Details</button>
+                        </form>
+                        <form asp-action="Delete" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger" name="id" value="@item.OrderId">Delete</button>
+                        </form>
+                    }
+
+                
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

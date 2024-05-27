@@ -1,0 +1,41 @@
+﻿@{
+    ViewData["Title"] = "Our Contact Information:";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <!-- Include Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Custom CSS for image */
+        .logo {
+            max-width: 200px; /* Adjust the maximum width of the image */
+            position: absolute; /* Set position to absolute */
+            bottom: 100px; /* Adjust the distance from the bottom */
+            right: 20px; /* Adjust the distance from the right */
+        }
+    </style>
+</head>
+<body>
+    <div style="background-color: black; color: gold; padding: 100px; text-align: center; position: relative;">
+        <h2 style="color: gold;">@ViewData["Title"]</h2>
+        <p>If you would like to contact us, you can reach us through the following channels:</p>
+
+        <ul class="list-unstyled">
+            <li><i class="fab fa-twitter"></i> Twitter: <a href="https://twitter.com/YourTwitterHandle" style="color: white;">KhumaloCraft.RSA</a></li>
+            <li><i class="fab fa-instagram"></i> Instagram: <a href="https://www.instagram.com/YourInstagramHandle" style="color: white;">KhumaloCraft_RSA</a></li>
+            <li><i class="fab fa-facebook"></i> Facebook: <a href="https://www.facebook.com/YourFacebookPage" style="color: white;">KhumaloCraft_RSA</a></li>
+            <li><i class="fab fa-whatsapp"></i> WhatsApp: <span style="color: white;">067 226 0154</span></li>
+            <li><i class="fas fa-phone"></i> Phone: <span style="color: white;">067 226 0154</span></li>
+            <li><i class="fas fa-envelope"></i> Email: <a href="mailto:youremail@example.com" style="color: white;">KhumaloCraft@gmail.com</a></li>
+        </ul>
+    </div>
+
+    <!-- Adjusted position of the logo -->
+    <img src="/image/WhatsApp Image 2024-05-22 at 22.10.00_fbeb7824.jpg" class="img-fluid logo"> <!-- Adding logo class to the image -->
+
+</body>
+</html>
