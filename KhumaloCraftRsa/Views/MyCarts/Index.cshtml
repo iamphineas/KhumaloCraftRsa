@@ -1,9 +1,4 @@
-﻿@using Microsoft.AspNetCore.Authorization
-@model IEnumerable<KhumaloCraftRsa.Models.MyCart>
-
-@{
-    ViewData["Title"] = "Shopping Cart";
-}
+﻿@model IEnumerable<KCSRSA.Models.MyCart>
 
 <h1>Shopping Cart</h1>
 
@@ -22,7 +17,7 @@
                 <td>@item.Product.Name</td>
                 <td>@item.Product.Price</td>
                 <td>
-                    <form asp-action="Delete" asp-route-id="@item.MyCartId" method="post" style="display:inline;">
+                    <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn-danger">Remove</button>
                     </form>
@@ -38,3 +33,4 @@
         <a asp-action="Checkout" class="btn btn-success">Checkout</a>
     </div>
 }
+

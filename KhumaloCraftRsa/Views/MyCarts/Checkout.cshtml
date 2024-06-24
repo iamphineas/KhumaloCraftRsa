@@ -2,10 +2,11 @@
     ViewData["Title"] = "Checkout";
 }
 
-<h1>Checkout</h1>
+<h1>@ViewData["Title"]</h1>
 
 <p>@ViewData["CheckoutMessage"]</p>
 
+<!-- Optionally, you can provide a button to go back to the shopping cart -->
 <div style="text-align: center;">
     <a asp-action="Index" class="btn btn-primary">Back to Shopping Cart</a>
 </div>

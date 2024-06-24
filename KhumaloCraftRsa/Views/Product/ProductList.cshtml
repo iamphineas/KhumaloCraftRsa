@@ -1,0 +1,110 @@
+﻿@model IEnumerable<KCSRSA.Models.Product>
+
+@{
+    ViewData["Title"] = "Product List";
+}
+
+<h1 class="page-title">Product List</h1>
+
+<form asp-controller="Product" asp-action="Search" method="get">
+    <p>
+        Title: <input type="text" name="Searching" />
+        <input type="submit" value="Filter" />
+    </p>
+</form>
+
+<div class="product-grid">
+    @foreach (var product in Model)
+    {
+        <div class="product-container">
+            <img src="@product.ImageUrl" alt="@product.Name" />
+            <div class="product-details">
+                <p class="product-name">@product.Name</p>
+                <p class="product-price">Price: @product.Price</p>
+                <p class="product-category">Category: @product.Category</p>
+                <p class="product-availability">Availability: @product.Availability</p>
+
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <form asp-controller="MyCarts" asp-action="AddCart" method="post">
+                        <input type="hidden" name="productId" value="@product.ProductId" />
+                        <button type="submit" class="add-to-cart">Add to Cart</button>
+                    </form>
+                }
+                else
+                {
+                    <div>
+                        <p>Please <a href="/Identity/Account/Login">login</a> to add items to your cart.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+    .page-title {
+        text-align: center;
+        color: gold;
+        font-size: 2em;
+        margin-top: 20px;
+    }
+
+    .product-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .product-container {
+        border: 2px solid gold;
+        background-color: black;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 220px;
+        transition: transform 0.3s ease;
+    }
+
+        .product-container:hover {
+            transform: scale(1.05);
+        }
+
+        .product-container img {
+            width: 180px;
+            height: 180px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+            .product-container img:hover {
+                transform: scale(1.1);
+            }
+
+    .product-details {
+        text-align: center;
+    }
+
+    .product-name, .product-price, .product-category, .product-availability {
+        margin: 5px 0;
+    }
+
+    .add-to-cart {
+        background-color: #000;
+        color: #fff;
+        border: 2px solid gold;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+        .add-to-cart:hover {
+            background-color: gold;
+            color: black;
+        }
+</style>
