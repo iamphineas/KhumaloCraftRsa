@@ -5,41 +5,25 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using KhumaloCraftRsa.Data;
-using KhumaloCraftRsa.Models;
-using Microsoft.AspNetCore.Identity;
+using KCSRSA.Data;
+using KCSRSA.Models;
 
-namespace KhumaloCraftRsa.Controllers
+namespace KCSRSA.Controllers
 {
     public class OrdersController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<IdentityUser> userManager;
-        private readonly SignInManager<IdentityUser> signInManager;
-        private readonly RoleManager<IdentityRole> roleManager;
+        private readonly KCSRSAContext _context;
 
-        public OrdersController(ApplicationDbContext context, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public OrdersController(KCSRSAContext context)
         {
             _context = context;
-            this.userManager = userManager;
-            this.signInManager = signInManager;
         }
 
         // GET: Orders
         public async Task<IActionResult> Index()
         {
-            var userId = userManager.GetUserName(User);
-
-
-            if (User.IsInRole("Member"))
-            {
-                //deviceStatuses = db.DeviceStatuses.Include(d => d.RepairStatus).Where(x => x.UserId == userId);
-                return View(_context.Orders.Where(x => x.UserId == userId).ToList());
-            }
-            else
-            {
-                return View(await _context.Orders.ToListAsync());
-            }
+            var kCSRSAContext = _context.Order.Include(o => o.Product).Include(o => o.User);
+            return View(await kCSRSAContext.ToListAsync());
         }
 
         // GET: Orders/Details/5
@@ -50,7 +34,9 @@ namespace KhumaloCraftRsa.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Orders
+            var order = await _context.Order
+                .Include(o => o.Product)
+                .Include(o => o.User)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
             if (order == null)
             {
@@ -63,6 +49,8 @@ namespace KhumaloCraftRsa.Controllers
         // GET: Orders/Create
         public IActionResult Create()
         {
+            ViewData["ProductId"] = new SelectList(_context.Product, "ProductId", "ProductId");
+            ViewData["UserId"] = new SelectList(_context.Set<User>(), "UserId", "UserId");
             return View();
         }
 
@@ -71,7 +59,7 @@ namespace KhumaloCraftRsa.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("OrderId,UserId,Quantity,OrderDate,ProductID,ProductName,Approved")] Order order)
+        public async Task<IActionResult> Create([Bind("OrderId,UserId,ProductId,Quantity,OrderDate")] Order order)
         {
             if (ModelState.IsValid)
             {
@@ -79,6 +67,8 @@ namespace KhumaloCraftRsa.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["ProductId"] = new SelectList(_context.Product, "ProductId", "ProductId", order.ProductId);
+            ViewData["UserId"] = new SelectList(_context.Set<User>(), "UserId", "UserId", order.UserId);
             return View(order);
         }
 
@@ -90,11 +80,13 @@ namespace KhumaloCraftRsa.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Orders.FindAsync(id);
+            var order = await _context.Order.FindAsync(id);
             if (order == null)
             {
                 return NotFound();
             }
+            ViewData["ProductId"] = new SelectList(_context.Product, "ProductId", "ProductId", order.ProductId);
+            ViewData["UserId"] = new SelectList(_context.Set<User>(), "UserId", "UserId", order.UserId);
             return View(order);
         }
 
@@ -103,7 +95,7 @@ namespace KhumaloCraftRsa.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("OrderId,UserId,Quantity,OrderDate,ProductID,ProductName,Approved")] Order order)
+        public async Task<IActionResult> Edit(int id, [Bind("OrderId,UserId,ProductId,Quantity,OrderDate")] Order order)
         {
             if (id != order.OrderId)
             {
@@ -130,6 +122,8 @@ namespace KhumaloCraftRsa.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["ProductId"] = new SelectList(_context.Product, "ProductId", "ProductId", order.ProductId);
+            ViewData["UserId"] = new SelectList(_context.Set<User>(), "UserId", "UserId", order.UserId);
             return View(order);
         }
 
@@ -141,7 +135,9 @@ namespace KhumaloCraftRsa.Controllers
                 return NotFound();
             }
 
-            var order = await _context.Orders
+            var order = await _context.Order
+                .Include(o => o.Product)
+                .Include(o => o.User)
                 .FirstOrDefaultAsync(m => m.OrderId == id);
             if (order == null)
             {
@@ -156,10 +152,10 @@ namespace KhumaloCraftRsa.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var order = await _context.Orders.FindAsync(id);
+            var order = await _context.Order.FindAsync(id);
             if (order != null)
             {
-                _context.Orders.Remove(order);
+                _context.Order.Remove(order);
             }
 
             await _context.SaveChangesAsync();
@@ -168,7 +164,7 @@ namespace KhumaloCraftRsa.Controllers
 
         private bool OrderExists(int id)
         {
-            return _context.Orders.Any(e => e.OrderId == id);
+            return _context.Order.Any(e => e.OrderId == id);
         }
     }
 }

@@ -1,9 +1,11 @@
-using KhumaloCraftRsa.Models;
+using KCSRSA.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace KhumaloCraftRsa.Controllers
+namespace KCSRSA.Controllers
 {
+
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

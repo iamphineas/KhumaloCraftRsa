@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using KhumaloCraftRsa.Data;
-using KhumaloCraftRsa.Models;
+using KCSRSA.Data;
+using KCSRSA.Models;
 
-namespace KhumaloCraftRsa.Controllers
+namespace KCSRSA.Controllers
 {
     public class TransactionsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly KCSRSAContext _context;
 
-        public TransactionsController(ApplicationDbContext context)
+        public TransactionsController(KCSRSAContext context)
         {
             _context = context;
         }
@@ -22,8 +22,8 @@ namespace KhumaloCraftRsa.Controllers
         // GET: Transactions
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Transactions.Include(t => t.Product);
-            return View(await applicationDbContext.ToListAsync());
+            var kCSRSAContext = _context.Transaction.Include(t => t.Product).Include(t => t.User);
+            return View(await kCSRSAContext.ToListAsync());
         }
 
         // GET: Transactions/Details/5
@@ -34,8 +34,9 @@ namespace KhumaloCraftRsa.Controllers
                 return NotFound();
             }
 
-            var transaction = await _context.Transactions
+            var transaction = await _context.Transaction
                 .Include(t => t.Product)
+                .Include(t => t.User)
                 .FirstOrDefaultAsync(m => m.TransactionId == id);
             if (transaction == null)
             {
@@ -48,7 +49,8 @@ namespace KhumaloCraftRsa.Controllers
         // GET: Transactions/Create
         public IActionResult Create()
         {
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductId");
+            ViewData["ProductId"] = new SelectList(_context.Product, "ProductId", "ProductId");
+            ViewData["UserId"] = new SelectList(_context.Set<User>(), "UserId", "UserId");
             return View();
         }
 
@@ -65,7 +67,8 @@ namespace KhumaloCraftRsa.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductId", transaction.ProductId);
+            ViewData["ProductId"] = new SelectList(_context.Product, "ProductId", "ProductId", transaction.ProductId);
+            ViewData["UserId"] = new SelectList(_context.Set<User>(), "UserId", "UserId", transaction.UserId);
             return View(transaction);
         }
 
@@ -77,12 +80,13 @@ namespace KhumaloCraftRsa.Controllers
                 return NotFound();
             }
 
-            var transaction = await _context.Transactions.FindAsync(id);
+            var transaction = await _context.Transaction.FindAsync(id);
             if (transaction == null)
             {
                 return NotFound();
             }
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductId", transaction.ProductId);
+            ViewData["ProductId"] = new SelectList(_context.Product, "ProductId", "ProductId", transaction.ProductId);
+            ViewData["UserId"] = new SelectList(_context.Set<User>(), "UserId", "UserId", transaction.UserId);
             return View(transaction);
         }
 
@@ -118,7 +122,8 @@ namespace KhumaloCraftRsa.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductId", transaction.ProductId);
+            ViewData["ProductId"] = new SelectList(_context.Product, "ProductId", "ProductId", transaction.ProductId);
+            ViewData["UserId"] = new SelectList(_context.Set<User>(), "UserId", "UserId", transaction.UserId);
             return View(transaction);
         }
 
@@ -130,8 +135,9 @@ namespace KhumaloCraftRsa.Controllers
                 return NotFound();
             }
 
-            var transaction = await _context.Transactions
+            var transaction = await _context.Transaction
                 .Include(t => t.Product)
+                .Include(t => t.User)
                 .FirstOrDefaultAsync(m => m.TransactionId == id);
             if (transaction == null)
             {
@@ -146,10 +152,10 @@ namespace KhumaloCraftRsa.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var transaction = await _context.Transactions.FindAsync(id);
+            var transaction = await _context.Transaction.FindAsync(id);
             if (transaction != null)
             {
-                _context.Transactions.Remove(transaction);
+                _context.Transaction.Remove(transaction);
             }
 
             await _context.SaveChangesAsync();
@@ -158,7 +164,7 @@ namespace KhumaloCraftRsa.Controllers
 
         private bool TransactionExists(int id)
         {
-            return _context.Transactions.Any(e => e.TransactionId == id);
+            return _context.Transaction.Any(e => e.TransactionId == id);
         }
     }
 }
